@@ -1,9 +1,9 @@
-import { Button } from 'primereact/button';
+import Dashboard from '@/view/dashboard';
 
 export default function pageDashboard() {
   return (
     <main>
-      <Button label="Submit" />
+      <Dashboard />
     </main>
   );
 }

@@ -1,5 +1,5 @@
-import Entrar from '@/view/Entrar';
+import Login from '@/view/login';
 
-export default function pageEntrar() {
-  return <Entrar />;
+export default function pageLogin() {
+  return <Login />;
 }

@@ -4,6 +4,8 @@ import './globals.css';
 import { ReactNode } from 'react';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-blue/theme.css';
+import ClientProvider from '@/services/config/ClientProvider';
+import Provider from '@/redux/provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,7 +32,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <PrimeReactProvider>{children}</PrimeReactProvider>
+        <ClientProvider>
+          <Provider>
+            <PrimeReactProvider>{children}</PrimeReactProvider>
+          </Provider>
+        </ClientProvider>
       </body>
     </html>
   );
