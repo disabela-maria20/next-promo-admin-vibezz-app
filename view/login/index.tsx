@@ -48,8 +48,6 @@ const Login = () => {
       router.push('/dashboard');
     },
     onError: (err: AxiosError) => {
-      console.log(err);
-
       if (!toast.current) return;
       toast.current.clear();
       toast.current.show({

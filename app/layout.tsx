@@ -4,8 +4,11 @@ import './globals.css';
 import { ReactNode } from 'react';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 import ClientProvider from '@/services/config/ClientProvider';
 import Provider from '@/redux/provider';
+import { PrimeReactI18nProvider } from '@/services/config/i18n';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -27,6 +30,9 @@ export default function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const value = {
+    locale: 'pt-BR',
+  };
   return (
     <html lang="en">
       <body
@@ -34,7 +40,9 @@ export default function RootLayout({
       >
         <ClientProvider>
           <Provider>
-            <PrimeReactProvider>{children}</PrimeReactProvider>
+            <PrimeReactI18nProvider>
+              <PrimeReactProvider value={value}>{children}</PrimeReactProvider>
+            </PrimeReactI18nProvider>
           </Provider>
         </ClientProvider>
       </body>

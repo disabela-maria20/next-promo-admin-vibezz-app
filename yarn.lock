@@ -2845,6 +2845,11 @@ primeicons@^7.0.0:
   resolved "https://registry.yarnpkg.com/primeicons/-/primeicons-7.0.0.tgz#6b25c3fdcb29bb745a3035bdc1ed5902f4a419cf"
   integrity sha512-jK3Et9UzwzTsd6tzl2RmwrVY/b8raJ3QZLzoDACj+oTJ0oX7L9Hy+XnVwgo4QVKlKpnP/Ur13SXV/pVh4LzaDw==
 
+primelocale@^2.1.7:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/primelocale/-/primelocale-2.1.7.tgz#1309e00bfcc117292919c8c6bfc76b739c26ee03"
+  integrity sha512-BzqPNAhr0lDDX4tnKM7FUDeCbpXcC558pHaQULTelhi7LG5rEtTx/isqy3ueHTNdyFl3evoY3ZRZ9x21zxUtRg==
+
 primereact@^10.9.6:
   version "10.9.7"
   resolved "https://registry.yarnpkg.com/primereact/-/primereact-10.9.7.tgz#a79a5de7d842826e7f7fb853f216bb37e581f78b"

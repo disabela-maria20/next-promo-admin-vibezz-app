@@ -22,3 +22,17 @@ export async function getListUsers() {
   const response = await axios.get('/auth/created-users');
   return response.data;
 }
+
+export async function deleteUser(userId: string) {
+  const response = await axios.delete(`/auth/users/${userId}`);
+  return response.data;
+}
+
+export async function editUser<T>(userId: string, data: T) {
+  const response = await axios.put(`/auth/users/${userId}`, data);
+  return response.data;
+}
+export async function createUser<T>(data: T) {
+  const response = await axios.post('/auth/users', data);
+  return response.data;
+}
