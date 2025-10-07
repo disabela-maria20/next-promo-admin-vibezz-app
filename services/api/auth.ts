@@ -33,6 +33,6 @@ export async function editUser<T>(userId: string, data: T) {
   return response.data;
 }
 export async function createUser<T>(data: T) {
-  const response = await axios.post('/auth/users', data);
+  const response = await axios.post('/auth/register', data);
   return response.data;
 }

@@ -119,7 +119,7 @@ const Usuarios = () => {
       email: '',
       password: '',
       name: '',
-      permissions: '',
+      permission: '',
     },
   });
 
@@ -250,16 +250,16 @@ const Usuarios = () => {
 
           <div>
             <label htmlFor="permissions" className="block mb-2">
-              Permissões
+              Permissão
             </label>
             <InputText
-              {...register('permissions')}
+              {...register('permission')}
               id="permissions"
               className="w-full"
             />
-            {errors.permissions && (
+            {errors.permission && (
               <p className="text-red-600 text-sm mt-1">
-                {errors.permissions.message}
+                {errors.permission.message}
               </p>
             )}
           </div>
