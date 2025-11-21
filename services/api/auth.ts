@@ -32,7 +32,13 @@ export async function editUser<T>(userId: string, data: T) {
   const response = await axios.put(`/auth/users/${userId}`, data);
   return response.data;
 }
+
 export async function createUser<T>(data: T) {
   const response = await axios.post('/auth/register', data);
+  return response.data;
+}
+
+export async function listPermissions<T>() {
+  const response = await axios.get('/auth/permissions');
   return response.data;
 }

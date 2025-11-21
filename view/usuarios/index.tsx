@@ -5,6 +5,7 @@ import {
   deleteUser,
   getListUsers,
   editUser,
+  listPermissions,
 } from '@/services/api/auth';
 import { queryClient } from '@/services/config/queryClient';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,10 +19,11 @@ import { Divider } from 'primereact/divider';
 import { InputText } from 'primereact/inputtext';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
+import { Dropdown } from 'primereact/dropdown';
 import React, { useState } from 'react';
 import { FiEdit, FiTrash } from 'react-icons/fi';
 import { UserSchema, UserSchemaType } from './login.schema';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 const Usuarios = () => {
   const [visible, setVisible] = useState(false);
@@ -33,6 +35,36 @@ const Usuarios = () => {
     queryKey: ['users'],
     queryFn: () => getListUsers(),
   });
+
+  const { data: permissions = [], isLoading: isLoadingPermissions } = useQuery<
+    Array<{ name: string }>
+  >({
+    queryKey: ['permissions'],
+    queryFn: listPermissions,
+    staleTime: 1000 * 60 * 30,
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<UserSchemaType>({
+    resolver: zodResolver(UserSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      name: '',
+      permission: '',
+    },
+  });
+
+  const openEditModal = (user: UserSchemaType) => {
+    setEditingUser(user);
+    reset(user);
+    setVisible(true);
+  };
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteUser(id),
@@ -71,14 +103,6 @@ const Usuarios = () => {
       });
       setVisible(false);
     },
-    onError: (err: AxiosError) => {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Erro',
-        detail: (err.response?.data as any)?.message || err.message,
-        sticky: true,
-      });
-    },
   });
 
   const updateMutation = useMutation<
@@ -98,67 +122,25 @@ const Usuarios = () => {
       setVisible(false);
       setEditingUser(null);
     },
-    onError: (err: AxiosError) => {
-      toast.current?.show({
-        severity: 'error',
-        summary: 'Erro',
-        detail: (err.response?.data as any)?.message || err.message,
-        sticky: true,
-      });
-    },
   });
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<UserSchemaType>({
-    resolver: zodResolver(UserSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      name: '',
-      permission: '',
-    },
-  });
+  const actionBodyTemplate = (rowData: any) => (
+    <div className="flex gap-2">
+      <Button severity="info" text onClick={() => openEditModal(rowData)}>
+        <FiEdit />
+      </Button>
+      <Button
+        severity="danger"
+        text
+        onClick={() => deleteMutation.mutate(rowData.id)}
+        disabled={deleteMutation.isPending}
+      >
+        <FiTrash />
+      </Button>
+    </div>
+  );
 
-  const openEditModal = (user: UserSchemaType) => {
-    setEditingUser(user);
-    reset(user); // preenche o formulário com os dados do usuário
-    setVisible(true);
-  };
-
-  const actionBodyTemplate = (rowData: any) => {
-    return (
-      <div className="flex gap-2">
-        <Button severity="info" text onClick={() => openEditModal(rowData)}>
-          <FiEdit />
-        </Button>
-        <Button
-          severity="danger"
-          text
-          onClick={() => deleteMutation.mutate(rowData.id)}
-          disabled={deleteMutation.isPending}
-        >
-          <FiTrash />
-          {deleteMutation.isPending && (
-            <ProgressSpinner style={{ width: '20px', height: '20px' }} />
-          )}
-        </Button>
-      </div>
-    );
-  };
-
-  if (isPending)
-    return (
-      <ProgressSpinner
-        style={{ width: '50px', height: '50px' }}
-        strokeWidth="8"
-        fill="var(--surface-ground)"
-        animationDuration=".5s"
-      />
-    );
+  if (isPending) return <ProgressSpinner />;
   if (error) return <p>❌ Erro ao carregar usuários</p>;
 
   return (
@@ -177,17 +159,18 @@ const Usuarios = () => {
       </div>
 
       <Divider />
-      <DataTable
-        value={data}
-        paginator
-        rows={5}
-        rowsPerPageOptions={[5, 10, 25, 50]}
-        tableStyle={{ minWidth: '50rem' }}
-        size="small"
-      >
+
+      <DataTable value={data} paginator rows={5} size="small">
         <Column field="name" header="Nome" />
         <Column field="email" header="E-mail" />
-        <Column field="permissions" header="Permissões" />
+        <Column
+          header="Permissões"
+          body={(rowData) =>
+            Array.isArray(rowData.permissions)
+              ? rowData.permissions.join(', ')
+              : rowData.permissions
+          }
+        />
         <Column header="Ações" body={actionBodyTemplate} />
       </DataTable>
 
@@ -207,71 +190,52 @@ const Usuarios = () => {
               createMutation.mutate(formData);
             }
           })}
-          className="grid grid-cols-1 gap-4"
+          className="grid gap-4"
         >
           <div>
-            <label htmlFor="name" className="block mb-2">
-              Nome
-            </label>
-            <InputText {...register('name')} id="name" className="w-full" />
-            {errors.name && (
-              <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
-            )}
+            <label>Nome</label>
+            <InputText {...register('name')} className="w-full" />
           </div>
 
           <div>
-            <label htmlFor="email" className="block mb-2">
-              E-mail
-            </label>
-            <InputText {...register('email')} id="email" className="w-full" />
-            {errors.email && (
-              <p className="text-red-600 text-sm mt-1">
-                {errors.email.message}
-              </p>
-            )}
+            <label>Email</label>
+            <InputText {...register('email')} className="w-full" />
           </div>
 
           <div>
-            <label htmlFor="senha" className="block mb-2">
-              Senha
-            </label>
+            <label>Senha</label>
             <InputText
               {...register('password')}
-              id="senha"
               type="password"
               className="w-full"
             />
-            {errors.password && (
-              <p className="text-red-600 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
           <div>
-            <label htmlFor="permissions" className="block mb-2">
-              Permissão
-            </label>
-            <InputText
-              {...register('permission')}
-              id="permissions"
-              className="w-full"
+            <label>Permissão</label>
+            <Controller
+              name="permission"
+              control={control}
+              render={({ field }) => (
+                <Dropdown
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.value)}
+                  options={permissions}
+                  optionLabel="name"
+                  optionValue="name"
+                  placeholder="Selecione"
+                  className="w-full"
+                  loading={isLoadingPermissions}
+                />
+              )}
             />
-            {errors.permission && (
-              <p className="text-red-600 text-sm mt-1">
-                {errors.permission.message}
-              </p>
-            )}
           </div>
-          <div className="flex justify-end mt-4 gap-2">
-            <Button
-              type="button"
-              onClick={() => setVisible(false)}
-              severity="secondary"
-            >
+
+          <div className="flex justify-end gap-2">
+            <Button type="button" onClick={() => setVisible(false)}>
               Cancelar
             </Button>
-            <Button type="submit" severity="success">
+            <Button type="submit">
               {editingUser ? 'Atualizar' : 'Salvar'}
             </Button>
           </div>
