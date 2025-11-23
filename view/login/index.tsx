@@ -1,13 +1,11 @@
-// Login.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
-import './styes.css';
 import { LoginSchema, LoginSchemaType } from './login.schema';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +15,8 @@ import { AxiosError } from 'axios';
 import { Toast } from 'primereact/toast';
 import { login } from '@/redux/store/auth/actions';
 import { useDispatch } from 'react-redux';
+
+const STORAGE_KEY = 'rememberLogin';
 
 const Login = () => {
   const [checked, setChecked] = useState(false);
@@ -29,6 +29,7 @@ const Login = () => {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
@@ -38,17 +39,29 @@ const Login = () => {
     },
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (formData: LoginSchemaType) => {
-      return postLogin(formData);
-    },
+  // ✅ Carregar login salvo ao abrir a página
+  useEffect(() => {
+    const savedLogin = localStorage.getItem(STORAGE_KEY);
+
+    if (savedLogin) {
+      const { email, password } = JSON.parse(savedLogin);
+      setValue('email', email);
+      setValue('password', password);
+      setChecked(true);
+    }
+  }, [setValue]);
+
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationFn: (formData: LoginSchemaType) => postLogin(formData),
     onSuccess: (response) => {
       const { token, user } = response;
+
       dispatch(login(token, user));
       router.push('/dashboard');
     },
     onError: (err: AxiosError) => {
       if (!toast.current) return;
+
       toast.current.clear();
       toast.current.show({
         severity: 'error',
@@ -60,6 +73,23 @@ const Login = () => {
     },
   });
 
+  const onSubmit = (formData: LoginSchemaType) => {
+    // ✅ Salvar ou remover dados conforme checkbox
+    if (checked) {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        })
+      );
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    mutate(formData);
+  };
+
   return (
     <section className="flex justify-center items-center bg-linear-to-bl h-[100vh] from-pink-700 to-purple-700">
       <div className="flex flex-column align-items-center justify-content-center flex-col px-5">
@@ -68,6 +98,7 @@ const Login = () => {
           alt="logo"
           className="max-h-24 object-contain mb-5"
         />
+
         <div className="w-full bg-white md:max-w-[350px] shadow-2xl rounded-3xl">
           <div
             className="w-full surface-card py-8 px-5 sm:px-8"
@@ -82,10 +113,8 @@ const Login = () => {
               </span>
             </div>
 
-            <form
-              className="p-fluid"
-              onSubmit={handleSubmit((formData) => mutate(formData))}
-            >
+            <form className="p-fluid" onSubmit={handleSubmit(onSubmit)}>
+              {/* EMAIL */}
               <label
                 htmlFor="email1"
                 className="block text-900 text-xl font-medium mb-2"
@@ -105,6 +134,7 @@ const Login = () => {
                 )}
               </label>
 
+              {/* SENHA */}
               <label
                 htmlFor="password1"
                 className="block text-900 font-medium text-xl mb-2"
@@ -131,6 +161,7 @@ const Login = () => {
                 )}
               </label>
 
+              {/* LEMBRAR SENHA */}
               <div className="flex align-items-center justify-content-between my-5 gap-5">
                 <div className="flex align-items-center">
                   <Checkbox
@@ -144,7 +175,7 @@ const Login = () => {
               </div>
 
               <Button
-                label={isPending ? 'Entrando...' : 'Acessar'}
+                label={isPending || isSuccess ? 'Entrando...' : 'Acessar'}
                 className="w-full p-3 text-xl"
                 type="submit"
                 disabled={isPending}

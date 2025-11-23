@@ -6,7 +6,7 @@ import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import React, { useState } from 'react';
 import { BsDot } from 'react-icons/bs';
-import { FiGrid, FiMenu, FiSettings } from 'react-icons/fi';
+import { FiClipboard, FiGrid, FiMenu, FiSettings } from 'react-icons/fi';
 import './style.css';
 import router from 'next/router';
 import { useDispatch } from 'react-redux';
@@ -42,6 +42,12 @@ const MenuNav: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <div className="flex items-center px-5 py-1 gap-2 hover:bg-white/30 rounded-2xl">
                   <FiGrid />
                   <Link href="/dashboard">Dashboard</Link>
+                </div>
+              </li>
+              <li className=" text-white rounded-2xl mb-3.5">
+                <div className="flex items-center px-5 py-1 gap-2 hover:bg-white/30 rounded-2xl">
+                  <FiClipboard />
+                  <Link href="/promocoes">Promoções</Link>
                 </div>
               </li>
               <li className=" text-white rounded-2xl  mb-3.5">

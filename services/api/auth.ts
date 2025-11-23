@@ -38,7 +38,7 @@ export async function createUser<T>(data: T) {
   return response.data;
 }
 
-export async function listPermissions<T>() {
+export async function listPermissions() {
   const response = await axios.get('/auth/permissions');
   return response.data;
 }
