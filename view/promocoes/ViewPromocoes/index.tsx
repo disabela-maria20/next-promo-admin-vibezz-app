@@ -4,6 +4,7 @@ import { useFormatDate } from '@/hook/useFormatDate';
 import { findPromotion } from '@/services/api/promotion';
 import { Promotion } from '@/types/Promotion';
 import { useQuery } from '@tanstack/react-query';
+import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { FileUpload } from 'primereact/fileupload';
 import { InputText } from 'primereact/inputtext';
@@ -34,10 +35,15 @@ const ViewPromocoes: React.FC<ViewPromocoesProps> = ({ slug }) => {
   return (
     <>
       <div className="flex justify-between items-center mb-7">
-        <h1 className="text-3xl font-semibold">
-          Promoção: <span className="font-extrabold">#{data.id}</span>
-        </h1>
-        <p>Data da criação: {createdAtFormatted}</p>
+        <div>
+          <h1 className="text-3xl font-semibold">
+            Promoção: <span className="font-extrabold">#{data.id}</span>
+          </h1>
+          <p>Data da criação: {createdAtFormatted}</p>
+        </div>
+        <div>
+          <Button>Realizar sorteio</Button>
+        </div>
       </div>
       <form>
         <div className="flex flex-col gap-2 mb-5">

@@ -8,7 +8,7 @@ export interface Promotion {
   end_date: string; // ISO Date
   draw_completed: number; // 0 ou 1 (ideal seria boolean)
   winners_quantity: number;
-  banner_base64: string | null;
-  terms_pdf_base64: string | null;
+  banner: string | null;
+  terms: string | null;
   winner_name: string | null;
 }
