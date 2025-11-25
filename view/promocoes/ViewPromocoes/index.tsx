@@ -1,12 +1,14 @@
 'use client';
 
 import { useFormatDate } from '@/hook/useFormatDate';
+import { useImg } from '@/hook/useImgFormt';
 import { findPromotion } from '@/services/api/promotion';
 import { Promotion } from '@/types/Promotion';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { FileUpload } from 'primereact/fileupload';
+import { Image } from 'primereact/image';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -88,19 +90,11 @@ const ViewPromocoes: React.FC<ViewPromocoesProps> = ({ slug }) => {
           </div>
         </div>
         <div>
+          {data.banner && <Image src={useImg(data.banner)} preview />}
+
           <label className="mb-4 block">
             Regulamentos e arquivos adicionais
           </label>
-          <FileUpload
-            name="demo[]"
-            url={'/api/upload'}
-            multiple
-            accept="image/*"
-            maxFileSize={1000000}
-            emptyTemplate={
-              <p className="m-0">Arraste arquivos aqui para upload.</p>
-            }
-          />
         </div>
       </form>
     </>

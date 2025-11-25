@@ -233,7 +233,7 @@ const Promocoes = () => {
                     mode="basic"
                     name="banner"
                     chooseLabel="Selecionar Banner"
-                    accept="image/*"
+                    accept="image/*, application/pdf"
                     customUpload
                     auto={false}
                     onSelect={(e) => field.onChange(e.files[0])}
@@ -259,7 +259,7 @@ const Promocoes = () => {
                     mode="basic"
                     name="terms"
                     chooseLabel="Selecionar Regulamento"
-                    accept="application/pdf"
+                    accept="image/*, application/pdf"
                     customUpload
                     auto={false}
                     onSelect={(e) => {
