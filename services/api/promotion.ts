@@ -1,19 +1,28 @@
-import { Promotion } from '@/types/Promotion';
-import { api, buildFormData } from '.';
+import axios from 'axios';
+import { buildFormData } from '.';
 import { PromoSchemaType } from '@/view/promocoes/promocoes.schema';
 
+axios.defaults.baseURL = process.env.API_URL;
+axios.defaults.headers.common['token'] = process.env.API_TOKEN;
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token && config.headers) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
 export async function listPromotion() {
-  const response = await api.get('/promotion/list-promotion');
+  const response = await axios.get('/promotion/list-promotion');
   return response.data;
 }
 
 export async function findPromotion(id: number) {
-  const response = await api.get(`/promotion/find-promotion/${id}`);
+  const response = await axios.get(`/promotion/find-promotion/${id}`);
   return response.data;
 }
 
 export async function createPromotion(payload: PromoSchemaType) {
   const formData = buildFormData(payload);
-  const { data } = await api.post('/promotion/created-promotion/', formData);
+  const { data } = await axios.post('/promotion/created-promotion/', formData);
   return data;
 }

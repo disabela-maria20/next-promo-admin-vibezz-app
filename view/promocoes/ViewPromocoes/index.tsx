@@ -1,10 +1,11 @@
 'use client';
 
 import { useFormatDate } from '@/hook/useFormatDate';
-import { useImg } from '@/hook/useImgFormt';
+import { isPdf, useImg } from '@/hook/useUtil';
 import { findPromotion } from '@/services/api/promotion';
 import { Promotion } from '@/types/Promotion';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
 import { FileUpload } from 'primereact/fileupload';
@@ -33,6 +34,7 @@ const ViewPromocoes: React.FC<ViewPromocoesProps> = ({ slug }) => {
   const endDateFormatted = useFormatDate(data?.end_date);
 
   if (!data || isPending) return <ProgressSpinner />;
+  console.log(isPdf(data?.terms));
 
   return (
     <>
@@ -89,12 +91,24 @@ const ViewPromocoes: React.FC<ViewPromocoesProps> = ({ slug }) => {
             </label>
           </div>
         </div>
-        <div>
-          {data.banner && <Image src={useImg(data.banner)} preview />}
-
-          <label className="mb-4 block">
-            Regulamentos e arquivos adicionais
-          </label>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="banner" className="mb-2 w-full block">
+              Banner da promoção
+            </label>
+            {data.banner && <Image src={useImg(data.banner)} preview />}
+          </div>
+          <div>
+            <label htmlFor="banner" className="mb-2 w-full block">
+              Regulamento
+            </label>
+            {data.terms && isPdf(data.terms) && (
+              <a href={data.terms} target="_blank" rel="noopener noreferrer">
+                <img src="./img/pdf_icon.png" alt="" />
+              </a>
+            )}
+            {data.terms && <Image src={useImg(data.terms)} preview />}
+          </div>
         </div>
       </form>
     </>
