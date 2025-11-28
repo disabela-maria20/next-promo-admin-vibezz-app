@@ -2,13 +2,11 @@
 
 import { useFormatDate } from '@/hook/useFormatDate';
 import { isPdf, useImg, useLink } from '@/hook/useUtil';
-import { findPromotion } from '@/services/api/promotion';
+import { findPromotion, listFieldsPromotion } from '@/services/api/promotion';
 import { Promotion } from '@/types/Promotion';
 import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
-import { FileUpload } from 'primereact/fileupload';
 import { Image } from 'primereact/image';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -22,11 +20,18 @@ interface ViewPromocoesProps {
 const ViewPromocoes: React.FC<ViewPromocoesProps> = ({ slug }) => {
   const id = Number(slug);
 
-  const { isPending, data, error } = useQuery<Promotion>({
+  const { isPending, data } = useQuery<Promotion>({
     queryKey: ['findPromotion', id],
     queryFn: () => findPromotion(id),
     enabled: !!id,
   });
+
+  const fields = useQuery<Promotion>({
+    queryKey: ['listFieldsPromotion'],
+    queryFn: listFieldsPromotion,
+  });
+
+  console.log(fields.data);
 
   // ✅ Hooks SEMPRE no topo
   const createdAtFormatted = useFormatDate(data?.created_at);

@@ -1,7 +1,11 @@
 'use client';
 
 import { useFormatDate } from '@/hook/useFormatDate';
-import { createPromotion, listPromotion } from '@/services/api/promotion';
+import {
+  createPromotion,
+  listFieldsPromotion,
+  listPromotion,
+} from '@/services/api/promotion';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -24,9 +28,13 @@ import { Toast } from 'primereact/toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { queryClient } from '@/services/config/queryClient';
+import { Field } from '@/types/Promotion';
+import { MultiSelect } from 'primereact/multiselect';
 
 const Promocoes = () => {
   const [visible, setVisible] = useState(false);
+  const [selectedCities, setSelectedCities] = useState(null);
+
   const toast = useRef<Toast>(null);
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -34,6 +42,13 @@ const Promocoes = () => {
     queryKey: ['promotion'],
     queryFn: listPromotion,
   });
+
+  const fields = useQuery<Field>({
+    queryKey: ['listFieldsPromotion'],
+    queryFn: listFieldsPromotion,
+  });
+
+  console.log(fields.data);
 
   const createPromo = useMutation<PromoSchemaType, Error, PromoSchemaType>({
     mutationFn: (data: PromoSchemaType) => createPromotion(data),
@@ -276,6 +291,24 @@ const Promocoes = () => {
                 <small className="text-red-500">{errors.terms.message}</small>
               )}
             </div>
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="">Campos do fomulario</label>
+            <MultiSelect
+              value={selectedCities}
+              onChange={(e) => setSelectedCities(e.value)}
+              options={
+                Array.isArray(fields.data)
+                  ? fields.data.map(
+                      (field: { name: string; field_name: string }) => ({
+                        label: field.name,
+                        value: field.field_name,
+                      })
+                    )
+                  : []
+              }
+              placeholder="Selecione os campos"
+            />
           </div>
 
           <div className="flex justify-end gap-2 mt-4">
